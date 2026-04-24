@@ -27,6 +27,7 @@
 #include <linux/hid.h>
 #include <linux/mutex.h>
 #include <linux/input/mt.h>
+#include <linux/version.h>
 
 #define USB_VENDOR_ID_APPLE		0x05ac
 
@@ -1071,7 +1072,11 @@ static int bcm5974_probe(struct usb_interface *iface,
 	cfg = bcm5974_get_config(udev);
 
 	/* allocate memory for our device state and initialize it */
+#if LINUX_VERSION_CODE < KERNEL_VERSION(7,0,0)
 	dev = kzalloc(sizeof(*dev), GFP_KERNEL);
+#else
+	dev = kzalloc_obj(*dev);
+#endif
 	input_dev = input_allocate_device();
 	if (!dev || !input_dev) {
 		dev_err(&iface->dev, "out of memory\n");
